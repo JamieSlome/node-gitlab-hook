@@ -4,7 +4,7 @@ This is easy to use nodeJS based web hook for GitLab.
 
 ## To Install:
 ```
-npm install node-gitlab-hook
+npm install gitlabhook
 ```
 
 ## To Use:
