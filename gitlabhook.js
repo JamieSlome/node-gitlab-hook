@@ -116,7 +116,7 @@ function serverHandler(req, res) {
     data = parse(data);
 
     // invalid json
-    if (!data) {
+    if (!data || !data.repository || !data.repository.name) {
        self.logger.error(Util.format('received invalid data from %s, returning 400\n\n', remoteAddress));
       return reply(400, res);
     }
