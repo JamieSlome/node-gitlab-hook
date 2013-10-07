@@ -1,0 +1,23 @@
+{
+  "name": "node-gitlab-hook",
+  "version": "0.0.1",
+  "description": "a gitlab post-receive hook",
+  "main": "gitlabhook.js",
+  "dependencies": {
+    "tmp": "~0.0.21"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@a73435.berlin.ptb.de:rolf.niepraschk/node-gitlab-hook.git"
+  },
+  "keywords": [
+    "GitLab",
+    "webhook"
+  ],
+  "author": "Rolf Niepraschk <Rolf.Niepraschk@gmx.de>",
+  "license": "MIT"
+}
