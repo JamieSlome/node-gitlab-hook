@@ -1,6 +1,6 @@
 {
   "name": "gitlabhook",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "description": "This an is easy to use nodeJS based web hook for GitLab.",
   "main": "gitlabhook.js",
   "dependencies": {
@@ -19,5 +19,8 @@
     "webhook"
   ],
   "author": "Rolf Niepraschk <Rolf.Niepraschk@gmx.de>",
-  "license": "MIT"
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rolfn/node-gitlab-hook/issues"
+  }
 }
