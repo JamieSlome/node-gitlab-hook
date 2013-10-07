@@ -1,6 +1,6 @@
 {
   "name": "node-gitlab-hook",
-  "version": "0.0.2",
+  "version": "0.0.1",
   "description": "This is easy to use nodeJS based web hook for GitLab.",
   "main": "gitlabhook.js",
   "dependencies": {
@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@a73435.berlin.ptb.de:rolf.niepraschk/node-gitlab-hook.git"
+    "url": "https://github.com/rolfn/node-gitlab-hook.git"
   },
   "keywords": [
     "GitLab",

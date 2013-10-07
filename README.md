@@ -49,14 +49,14 @@ The `*` matches any tasks.
 
 The place holders are:
 
-`%s`: GitLab server's IP address
-`%r`: name of the repository (e.g. `myRepo`)
-`%u`: owner of the repository (user name)
-`%b`: branch reference (e.g. `refs/heads/master`)
-`%g`: git cloning path on the GitLab server (e.g. `git@gitlab.host:rolf.niepraschk/myRepo.git`)
-`%i`: id of the last commit
-`%t`: timestamp of the last commit
-`%m`: message of the last commit
+* `%s`: GitLab server's IP address
+* `%r`: name of the repository (e.g. `myRepo`)
+* `%u`: owner of the repository (user name)
+* `%b`: branch reference (e.g. `refs/heads/master`)
+* `%g`: git cloning path on the GitLab server (e.g. `git@gitlab.host:rolf.niepraschk/myRepo.git`)
+* `%i`: id of the last commit
+* `%t`: timestamp of the last commit
+* `%m`: message of the last commit
 
 # License
 
