@@ -1,6 +1,6 @@
 # node-gitlab-hook
 
-This is a very simple, easy to use web hook for GitLab.
+This is easy to use nodeJS based web hook for GitLab.
 
 ## To Install:
 ```

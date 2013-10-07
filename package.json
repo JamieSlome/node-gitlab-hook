@@ -1,7 +1,7 @@
 {
   "name": "node-gitlab-hook",
-  "version": "0.0.1",
-  "description": "a gitlab post-receive hook",
+  "version": "0.0.2",
+  "description": "This is easy to use nodeJS based web hook for GitLab.",
   "main": "gitlabhook.js",
   "dependencies": {
     "tmp": "~0.0.21"
