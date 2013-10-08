@@ -18,20 +18,22 @@ var isArray = Util.isArray;
 var GitLabHook = function(options) {
   if (!(this instanceof GitLabHook)) return new GitLabHook(options);
   options = options || {};
-  this.config = options.config || 'gitlabhook.conf';
+  this.configFile = options.configFile || 'gitlabhook.conf';
+  this.configPathes = options.configPathes ||
+    ['/etc/gitlabhook', '/usr/local/etc/gitlabhook/', '.']
   this.port = options.port || 3420;
   this.host = options.host || '0.0.0.0';
   this.cmdshell = options.cmdshell || '/bin/sh';
   this.keep = (typeof options.keep === 'undefined') ? false : options.keep;
   this.logger = options.logger || { log: function(){}, error: function(){} };
-  var cfg = readConfigFile(this.config);
+  var cfg = readConfigFile(this.configPathes, this.configFile);
   if (cfg) {
-    this.logger.log('loading config file: ', this.config);
-    this.logger.log('config file:\n', Util.inspect(cfg));
+    this.logger.log('loading config file: ' + this.configFile);
+    this.logger.log('config file:\n' + Util.inspect(cfg));
     for (var i in cfg) options[i] = cfg[i];
   } else {
     this.logger.error('[GitLabHook] error reading config file: ',
-      this.config);
+      this.configFile);
   }
 
   var active = false, tasks = options.tasks;
@@ -60,13 +62,18 @@ GitLabHook.prototype.listen = function(callback) {
   }
 };
 
-function readConfigFile(file) {
-  try {
-    var data = Fs.readFileSync(file, 'utf-8');
-    return parse(data);
-  } catch(err) {
-    return false;
+function readConfigFile(pathes, file) {
+  var fname, ret = false;
+  for (var i=0;i<pathes.length;i++) {
+    fname = Path.join(pathes[i], file);
+    try {
+      var data = Fs.readFileSync(fname, 'utf-8');
+      ret = parse(data);
+      break;
+    } catch(err) {
+    }
   }
+  return ret;
 }
 
 function parse(data) {

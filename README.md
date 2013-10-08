@@ -22,13 +22,14 @@ Configure a WebHook URL to whereever the server is listening.
 
 * **host**: the host to listen on, defaults to `0.0.0.0`
 * **port**: the port to listen on, defaults to `3240`
-* **config**: the json config file which overrides the default options. May located at `/etc/gitlabhook/`, `/usr/local/etc/gitlabhook/` or in the current directory, defaults to `gitlabhook.conf`
+* **configFile**: the json config file. May located at **configPathes**, defaults to `gitlabhook.conf`
+* **configPathes**: the search pathes for **configFile**, defaults to `['/etc/gitlabhook/', '/usr/local/etc/gitlabhook/', '.']`
 * **keep**: if true, temporary files are not deleted, defaults to `false`. Mostly only for debugging purposes.
 * **logger**: an optional instance of a logger that supports the "log" and "error" methods and one parameter for data (like console), default is to not log (`logger:{log:function(s){}, error:function(s){}}`). Mostly only for debugging purposes.
-* **tasks**: relations between repositories and shell commands, e.g. `{repo1:'cmd1', repo2:['cmd2a','cmd2b','cmd2c']}`
+* **tasks**: relations between repositories and shell commands (e.g. `{repo1:'cmd1', repo2:['cmd2a','cmd2b','cmd2c']}`)
 * **cmdshell**: the command-line interpreter to be used, defaults to `/bin/sh`
 
-Example config file with tasks:
+Example config file with task definitions:
 
 ```javascript
 {

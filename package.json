@@ -1,6 +1,6 @@
 {
   "name": "gitlabhook",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "This is an easy to use nodeJS based web hook for GitLab.",
   "main": "gitlabhook.js",
   "dependencies": {
