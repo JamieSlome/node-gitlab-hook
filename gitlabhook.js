@@ -32,7 +32,7 @@ var GitLabHook = function(options) {
     this.logger.log('config file:\n' + Util.inspect(cfg));
     for (var i in cfg) options[i] = cfg[i];
   } else {
-    this.logger.error('[GitLabHook] error reading config file: ',
+    this.logger.error('error reading config file: ',
       this.configFile);
   }
 
@@ -100,7 +100,8 @@ function serverHandler(req, res) {
   var buffer = [];
   var bufferLength = 0;
   var failed = false;
-  var remoteAddress = req.ip || req.socket.remoteAddress || req.socket.socket.remoteAddress;
+  var remoteAddress = req.ip || req.socket.remoteAddress ||
+    req.socket.socket.remoteAddress;
 
   req.on('data', function (chunk) {
     if (failed) return;
@@ -117,24 +118,30 @@ function serverHandler(req, res) {
       bufferLength += chunk.length;
     }
 
-    self.logger.log(Util.format('received %d bytes from %s\n\n', bufferLength, remoteAddress));
+    self.logger.log(Util.format('received %d bytes from %s\n\n', bufferLength,
+      remoteAddress));
 
     data = Buffer.concat(buffer, bufferLength).toString();
     data = parse(data);
 
     // invalid json
     if (!data || !data.repository || !data.repository.name) {
-       self.logger.error(Util.format('received invalid data from %s, returning 400\n\n', remoteAddress));
+       self.logger.error(Util.format('received invalid data from %s, returning 400\n\n',
+         remoteAddress));
       return reply(400, res);
     }
 
     reply(200, res);
 
     var repo = data.repository.name;
+    var a = data.repository.url.split(/[@:]/);
+    var httpUrl = 'http://' + a[1] + ((a[3]) ? ':' + a[2] : '') +
+      '/' + a[a.length-1];
     var lastCommit = data.commits[data.commits.length-1];
     var map = {
       '%r': repo,
       '%g': data.repository.url,
+      '%h': httpUrl,
       '%u': data.user_name,
       '%b': data.ref,
       '%i': lastCommit.id,
@@ -143,7 +150,8 @@ function serverHandler(req, res) {
       '%s': remoteAddress
     }
 
-    self.logger.log(Util.format('got event on %s:%s from %s\n\n', repo, data.ref, remoteAddress));
+    self.logger.log(Util.format('got event on %s:%s from %s\n\n', repo, data.ref,
+      remoteAddress));
     self.logger.log(Util.inspect(data, { showHidden: true, depth: 10 }) + '\n\n');
 
     var cmds = getCmds(self.tasks, map, repo);
@@ -194,7 +202,8 @@ function serverHandler(req, res) {
 
   // 405 if the method is wrong
   if (req.method !== 'POST') {
-      self.logger.error(Util.format('got invalid method from %s, returning 405', remoteAddress));
+      self.logger.error(Util.format('got invalid method from %s, returning 405',
+        remoteAddress));
       failed = true;
       return reply(405, res);
   }
