@@ -183,7 +183,7 @@ function serverHandler(req, res) {
         });
       }
 
-      Tmp.dir({ prefix:'gitlabhook-', keep:self.keep, unsafeCleanup:true },
+      Tmp.dir({ prefix:'gitlabhook.', keep:self.keep, unsafeCleanup:true },
         function (err, path) {
         if (err) {
           self.logger.error(err);

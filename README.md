@@ -35,14 +35,14 @@ Example config file with task definitions:
 {
   "tasks": {
     "myRepo": "/usr/local/bin/myDeploy %g",
-         "*": ["echo \"GitLab Server %s\"",
-               "echo \"Repository: %r\"",
-               "echo \"User: %u\"",
-               "echo \"Branch: %b\"",
-               "echo \"Git Url: %g\"",
-               "echo \"Last Commit: %i\"",
-               "echo \"\tMessage: %m\"",
-               "echo \"\tTime: %t\""]
+         "*": ["echo 'GitLab Server %s'",
+               "echo 'Repository: %r'",
+               "echo 'User: %u'",
+               "echo 'Branch: %b'",
+               "echo 'Git Url: %g'",
+               "echo 'Last Commit: %i'",
+               "echo '\tMessage: %m'",
+               "echo '\tTime: %t'"]
   }
 }
 ```
