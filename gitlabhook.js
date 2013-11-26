@@ -1,8 +1,7 @@
 
 /*
-  Inspired by https://github.com/nlf/node-github-hook
-
   Rolf Niepraschk (Rolf.Niepraschk@gmx.de)
+  Inspired by https://github.com/nlf/node-github-hook
 */
 
 var Http = require('http');
@@ -162,6 +161,7 @@ function serverHandler(req, res) {
 
       function execute(path, idx) {
         if (idx == cmds.length) return;
+        // TODO: Temp._rmdirRecursiveSync(path);
         var fname = Path.join(path, 'task-' + pad(idx, 3));
         Fs.writeFile(fname, cmds[idx], function (err) {
           if (err) {
