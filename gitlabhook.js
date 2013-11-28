@@ -166,7 +166,6 @@ function serverHandler(req, res) {
           Tmp.cleanup();
           return;
         }
-        // TODO: Temp._rmdirRecursiveSync(path);
         var fname = Path.join(path, 'task-' + pad(idx, 3));
         Fs.writeFile(fname, cmds[idx], function (err) {
           if (err) {
