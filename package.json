@@ -4,7 +4,7 @@
   "description": "This is an easy to use nodeJS based web hook for GitLab.",
   "main": "gitlabhook.js",
   "dependencies": {
-    "tmp": "~0.6.0"
+    "temp": "~0.6.0"
   },
   "devDependencies": {},
   "scripts": {
