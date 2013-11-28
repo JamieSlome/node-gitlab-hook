@@ -9,7 +9,8 @@ var Url = require('url');
 var Fs = require('fs');
 var execFile = require('child_process').execFile;
 var Path = require('path');
-var Tmp = require('tmp');
+var Os = require('os');
+var Tmp = require('temp'); Tmp.track();
 var Util = require('util');
 var inspect = Util.inspect;
 var isArray = Util.isArray;
@@ -160,7 +161,11 @@ function serverHandler(req, res) {
       self.logger.log('cmds: ' + inspect(cmds) + '\n');
 
       function execute(path, idx) {
-        if (idx == cmds.length) return;
+        if (idx == cmds.length) {
+          self.logger.log('Remove working directory: ' + self.path);
+          Tmp.cleanup();
+          return;
+        }
         // TODO: Temp._rmdirRecursiveSync(path);
         var fname = Path.join(path, 'task-' + pad(idx, 3));
         Fs.writeFile(fname, cmds[idx], function (err) {
@@ -183,12 +188,12 @@ function serverHandler(req, res) {
         });
       }
 
-      Tmp.dir({ prefix:'gitlabhook.', keep:self.keep, unsafeCleanup:true },
-        function (err, path) {
+      Tmp.mkdir({dir:Os.tmpDir(), prefix:'gitlabhook.'}, function(err, path) {
         if (err) {
           self.logger.error(err);
           return;
         }
+        self.path = path;
         self.logger.log('Tempdir: ' + path);
         var i = 0;
         execute(path, i);
