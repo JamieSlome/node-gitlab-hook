@@ -20,7 +20,7 @@ var GitLabHook = function(options) {
   options = options || {};
   this.configFile = options.configFile || 'gitlabhook.conf';
   this.configPathes = options.configPathes ||
-    ['/etc/gitlabhook', '/usr/local/etc/gitlabhook/', '.']
+    ['/etc/gitlabhook', '/usr/local/etc/gitlabhook/', '.'];
   this.port = options.port || 3420;
   this.host = options.host || '0.0.0.0';
   this.cmdshell = options.cmdshell || '/bin/sh';
@@ -148,44 +148,44 @@ function serverHandler(req, res) {
       '%t': lastCommit.timestamp,
       '%m': lastCommit.message,
       '%s': remoteAddress
-    }
+    };
 
     self.logger.log(Util.format('got event on %s:%s from %s\n\n', repo, data.ref,
       remoteAddress));
     self.logger.log(Util.inspect(data, { showHidden: true, depth: 10 }) + '\n\n');
+
+    function execute(path, idx) {
+      if (idx == cmds.length) {
+        self.logger.log('Remove working directory: ' + self.path);
+        Tmp.cleanup();
+        return;
+      }
+      var fname = Path.join(path, 'task-' + pad(idx, 3));
+      Fs.writeFile(fname, cmds[idx], function (err) {
+        if (err) {
+          self.logger.error('File creation error: ' + err);
+          return;
+        }
+        self.logger.log('File created: ' + fname);
+        execFile(self.cmdshell, [ fname ], { cwd:path, env:process.env },
+          function (err, stdout, stderr) {
+          if (err) {
+            self.logger.error('Exec error: ' + err);
+          } else {
+            self.logger.log('Executed: ' + self.cmdshell + ' ' + fname);
+            process.stdout.write(stdout);
+          }
+          process.stderr.write(stderr);
+          execute(path, ++idx);
+        });
+      });
+    }
 
     var cmds = getCmds(self.tasks, map, repo);
 
     if (cmds.length > 0) {
 
       self.logger.log('cmds: ' + inspect(cmds) + '\n');
-
-      function execute(path, idx) {
-        if (idx == cmds.length) {
-          self.logger.log('Remove working directory: ' + self.path);
-          Tmp.cleanup();
-          return;
-        }
-        var fname = Path.join(path, 'task-' + pad(idx, 3));
-        Fs.writeFile(fname, cmds[idx], function (err) {
-          if (err) {
-            self.logger.error('File creation error: ' + err);
-            return;
-          }
-          self.logger.log('File created: ' + fname);
-          execFile(self.cmdshell, [ fname ], { cwd:path, env:process.env },
-            function (err, stdout, stderr) {
-            if (err) {
-              self.logger.error('Exec error: ' + err);
-            } else {
-              self.logger.log('Executed: ' + self.cmdshell + ' ' + fname);
-              process.stdout.write(stdout);
-            }
-            process.stderr.write(stderr);
-            execute(path, ++idx);
-          });
-        });
-      }
 
       Tmp.mkdir({dir:Os.tmpDir(), prefix:'gitlabhook.'}, function(err, path) {
         if (err) {
