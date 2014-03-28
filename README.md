@@ -25,7 +25,7 @@ Configure a WebHook URL to whereever the server is listening.
 * **configFile**: the json config file. May located at **configPathes**, defaults to `gitlabhook.conf`
 * **configPathes**: the search pathes for **configFile**, defaults to `['/etc/gitlabhook/', '/usr/local/etc/gitlabhook/', '.']`
 * **keep**: if true, temporary files are not deleted, defaults to `false`. Mostly only for debugging purposes.
-* **logger**: an optional instance of a logger that supports the "log" and "error" methods and one parameter for data (like console), default is to not log (`logger:{log:function(s){}, error:function(s){}}`). Mostly only for debugging purposes.
+* **logger**: an optional instance of a logger that supports the "info" and "error" methods and one parameter for data (like console), default is to not log (`logger:{info:function(s){}, error:function(s){}}`). Mostly only for debugging purposes.
 * **tasks**: relations between repositories and shell commands (e.g. `{repo1:'cmd1', repo2:['cmd2a','cmd2b','cmd2c']}`)
 * **cmdshell**: the command-line interpreter to be used, defaults to `/bin/sh`
 

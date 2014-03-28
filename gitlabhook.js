@@ -25,7 +25,7 @@ var GitLabHook = function(options, callback) {
   this.host = options.host || '0.0.0.0';
   this.cmdshell = options.cmdshell || '/bin/sh';
   this.keep = (typeof options.keep === 'undefined') ? false : options.keep;
-  this.logger = options.logger || { log: function(){}, error: function(){} };
+  this.logger = options.logger || { info: function(){}, error: function(){} };
   this.callback = callback;
   var cfg = readConfigFile(this.configPathes, this.configFile);
   if (cfg) {
