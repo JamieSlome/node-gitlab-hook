@@ -11,7 +11,7 @@ npm install gitlabhook
 
 ```javascript
 var gitlabhook = require('gitlabhook');
-var gitlab = gitlabhook({/* options */});
+var gitlab = gitlabhook({/* options */} [, callback]);
 
 gitlab.listen();
 ```
@@ -28,6 +28,8 @@ Configure a WebHook URL to whereever the server is listening.
 * **logger**: an optional instance of a logger that supports the "log" and "error" methods and one parameter for data (like console), default is to not log (`logger:{log:function(s){}, error:function(s){}}`). Mostly only for debugging purposes.
 * **tasks**: relations between repositories and shell commands (e.g. `{repo1:'cmd1', repo2:['cmd2a','cmd2b','cmd2c']}`)
 * **cmdshell**: the command-line interpreter to be used, defaults to `/bin/sh`
+
+The config file will be ignored if a callback function is declared.
 
 Example config file with task definitions:
 
