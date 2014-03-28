@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 
-var util =  require('util');
-
-var PORT = 3420;
+var util = require('util');
+var port = 3420;
 
 var logger = {
   info:  console.log,
@@ -10,7 +9,7 @@ var logger = {
 };
 
 var glh = {
-  port: PORT,
+  port: port,
   host: '0.0.0.0',
   logger: logger
 };
@@ -21,9 +20,13 @@ function myCallback(data) {
 }
 
 // With an optional callback function the "gitlabhook.conf" will be ignored.
-var server = require('gitlabhook')(glh);
+var server = require('gitlabhook')(glh); // (glh, myCallback);
+
 server.listen();
-if (server.server) logger.info('webhook server listen (%d)\n', PORT);
+
+if (server.server) {
+  logger.info('webhook server listen (%d)\n', port);
+}
 
 /*
  http://localhost:3420
