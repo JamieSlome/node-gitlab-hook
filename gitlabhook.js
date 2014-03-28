@@ -15,8 +15,8 @@ var Util = require('util');
 var inspect = Util.inspect;
 var isArray = Util.isArray;
 
-var GitLabHook = function(options) {
-  if (!(this instanceof GitLabHook)) return new GitLabHook(options);
+var GitLabHook = function(options, callback) {
+  if (!(this instanceof GitLabHook)) return new GitLabHook(options, callback);
   options = options || {};
   this.configFile = options.configFile || 'gitlabhook.conf';
   this.configPathes = options.configPathes ||
@@ -26,25 +26,24 @@ var GitLabHook = function(options) {
   this.cmdshell = options.cmdshell || '/bin/sh';
   this.keep = (typeof options.keep === 'undefined') ? false : options.keep;
   this.logger = options.logger || { log: function(){}, error: function(){} };
+  this.callback = callback;
   var cfg = readConfigFile(this.configPathes, this.configFile);
   if (cfg) {
-    this.logger.log('loading config file: ' + this.configFile);
-    this.logger.log('config file:\n' + Util.inspect(cfg));
+    this.logger.info('loading config file: ' + this.configFile);
+    this.logger.info('config file:\n' + Util.inspect(cfg));
     for (var i in cfg) options[i] = cfg[i];
   } else {
-    this.logger.error('error reading config file: ',
-      this.configFile);
+    this.logger.info("can't read config file: ", this.configFile);
   }
 
   var active = false, tasks = options.tasks;
-  if (typeof tasks === 'object' && Object.keys(tasks).length && !isArray(tasks)) {
+  if (typeof tasks == 'object' && Object.keys(tasks).length) {
     this.tasks = tasks;
     active = true;
   }
+  if (typeof callback == 'function') active = true;
 
-  var self = this;
-  self.logger.log('self: ' + inspect(self) + '\n');
-
+  this.logger.info('self: ' + inspect(this) + '\n');
 
   if (active) this.server = Http.createServer(serverHandler.bind(this));
 };
@@ -53,12 +52,12 @@ GitLabHook.prototype.listen = function(callback) {
   var self = this;
   if (typeof self.server !== 'undefined') {
     self.server.listen(self.port, self.host, function () {
-      self.logger.log(Util.format(
+      self.logger.info(Util.format(
         'listening for github events on %s:%d', self.host, self.port));
       if (typeof callback === 'function') callback();
     });
   } else {
-    self.logger.log('server disabled');
+    self.logger.info('server disabled');
   }
 };
 
@@ -94,6 +93,73 @@ function reply(statusCode, res) {
   res.end();
 }
 
+function executeShellCmds(self, address, data) {
+  var repo = data.repository.name;
+  var a = data.repository.url.split(/[@:]/);
+  var httpUrl = 'http://' + a[1] + ((a[3]) ? ':' + a[2] : '') +
+    '/' + a[a.length-1];
+  var lastCommit = data.commits[data.commits.length-1];
+  var map = {
+    '%r': repo,
+    '%g': data.repository.url,
+    '%h': httpUrl,
+    '%u': data.user_name,
+    '%b': data.ref,
+    '%i': lastCommit.id,
+    '%t': lastCommit.timestamp,
+    '%m': lastCommit.message,
+    '%s': address
+  };
+
+  function execute(path, idx) {
+    if (idx == cmds.length) {
+      self.logger.info('Remove working directory: ' + self.path);
+      Tmp.cleanup();
+      return;
+    }
+    var fname = Path.join(path, 'task-' + pad(idx, 3));
+    Fs.writeFile(fname, cmds[idx], function (err) {
+      if (err) {
+        self.logger.error('File creation error: ' + err);
+        return;
+      }
+      self.logger.info('File created: ' + fname);
+      execFile(self.cmdshell, [ fname ], { cwd:path, env:process.env },
+        function (err, stdout, stderr) {
+        if (err) {
+          self.logger.error('Exec error: ' + err);
+        } else {
+          self.logger.info('Executed: ' + self.cmdshell + ' ' + fname);
+          process.stdout.write(stdout);
+        }
+        process.stderr.write(stderr);
+        execute(path, ++idx);
+      });
+    });
+  }
+
+  var cmds = getCmds(self.tasks, map, repo);
+
+  if (cmds.length > 0) {
+
+    self.logger.info('cmds: ' + inspect(cmds) + '\n');
+
+    Tmp.mkdir({dir:Os.tmpDir(), prefix:'gitlabhook.'}, function(err, path) {
+      if (err) {
+        self.logger.error(err);
+        return;
+      }
+      self.path = path;
+      self.logger.info('Tempdir: ' + path);
+      var i = 0;
+      execute(path, i);
+    });
+
+  } else {
+    self.logger.info('No related commands for repository "' + repo + '"');
+  }
+}
+
 function serverHandler(req, res) {
   var self = this;
   var url = Url.parse(req.url, true);
@@ -118,7 +184,7 @@ function serverHandler(req, res) {
       bufferLength += chunk.length;
     }
 
-    self.logger.log(Util.format('received %d bytes from %s\n\n', bufferLength,
+    self.logger.info(Util.format('received %d bytes from %s\n\n', bufferLength,
       remoteAddress));
 
     data = Buffer.concat(buffer, bufferLength).toString();
@@ -131,75 +197,19 @@ function serverHandler(req, res) {
       return reply(400, res);
     }
 
+    var repo = data.repository.name;
+
     reply(200, res);
 
-    var repo = data.repository.name;
-    var a = data.repository.url.split(/[@:]/);
-    var httpUrl = 'http://' + a[1] + ((a[3]) ? ':' + a[2] : '') +
-      '/' + a[a.length-1];
-    var lastCommit = data.commits[data.commits.length-1];
-    var map = {
-      '%r': repo,
-      '%g': data.repository.url,
-      '%h': httpUrl,
-      '%u': data.user_name,
-      '%b': data.ref,
-      '%i': lastCommit.id,
-      '%t': lastCommit.timestamp,
-      '%m': lastCommit.message,
-      '%s': remoteAddress
-    };
-
-    self.logger.log(Util.format('got event on %s:%s from %s\n\n', repo, data.ref,
+    self.logger.info(Util.format('got event on %s:%s from %s\n\n', repo, data.ref,
       remoteAddress));
-    self.logger.log(Util.inspect(data, { showHidden: true, depth: 10 }) + '\n\n');
+    self.logger.info(Util.inspect(data, { showHidden: true, depth: 10 }) + '\n\n');
 
-    function execute(path, idx) {
-      if (idx == cmds.length) {
-        self.logger.log('Remove working directory: ' + self.path);
-        Tmp.cleanup();
-        return;
-      }
-      var fname = Path.join(path, 'task-' + pad(idx, 3));
-      Fs.writeFile(fname, cmds[idx], function (err) {
-        if (err) {
-          self.logger.error('File creation error: ' + err);
-          return;
-        }
-        self.logger.log('File created: ' + fname);
-        execFile(self.cmdshell, [ fname ], { cwd:path, env:process.env },
-          function (err, stdout, stderr) {
-          if (err) {
-            self.logger.error('Exec error: ' + err);
-          } else {
-            self.logger.log('Executed: ' + self.cmdshell + ' ' + fname);
-            process.stdout.write(stdout);
-          }
-          process.stderr.write(stderr);
-          execute(path, ++idx);
-        });
-      });
-    }
 
-    var cmds = getCmds(self.tasks, map, repo);
-
-    if (cmds.length > 0) {
-
-      self.logger.log('cmds: ' + inspect(cmds) + '\n');
-
-      Tmp.mkdir({dir:Os.tmpDir(), prefix:'gitlabhook.'}, function(err, path) {
-        if (err) {
-          self.logger.error(err);
-          return;
-        }
-        self.path = path;
-        self.logger.log('Tempdir: ' + path);
-        var i = 0;
-        execute(path, i);
-      });
-
+    if (typeof self.callback == 'function') {
+      self.callback(data);
     } else {
-      self.logger.log('No related commands for repository "' + repo + '"');
+      executeShellCmds(self, remoteAddress, data);
     }
 
   });
