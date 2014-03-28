@@ -21,7 +21,7 @@ Configure a WebHook URL to whereever the server is listening.
 ### Available options are:
 
 * **host**: the host to listen on, defaults to `0.0.0.0`
-* **port**: the port to listen on, defaults to `3240`
+* **port**: the port to listen on, defaults to `3420`
 * **configFile**: the json config file. May located at **configPathes**, defaults to `gitlabhook.conf`
 * **configPathes**: the search pathes for **configFile**, defaults to `['/etc/gitlabhook/', '/usr/local/etc/gitlabhook/', '.']`
 * **keep**: if true, temporary files are not deleted, defaults to `false`. Mostly only for debugging purposes.
