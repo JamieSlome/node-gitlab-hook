@@ -27,21 +27,26 @@ var GitLabHook = function(options, callback) {
   this.keep = (typeof options.keep === 'undefined') ? false : options.keep;
   this.logger = options.logger || { info: function(){}, error: function(){} };
   this.callback = callback;
-  var cfg = readConfigFile(this.configPathes, this.configFile);
-  if (cfg) {
-    this.logger.info('loading config file: ' + this.configFile);
-    this.logger.info('config file:\n' + Util.inspect(cfg));
-    for (var i in cfg) options[i] = cfg[i];
-  } else {
-    this.logger.info("can't read config file: ", this.configFile);
-  }
 
-  var active = false, tasks = options.tasks;
-  if (typeof tasks == 'object' && Object.keys(tasks).length) {
-    this.tasks = tasks;
+  var active = false, tasks;
+
+  if (typeof callback == 'function') {
     active = true;
+  } else {
+    cfg = readConfigFile(this.configPathes, this.configFile);
+    if (cfg) {
+      this.logger.info('loading config file: ' + this.configFile);
+      this.logger.info('config file:\n' + Util.inspect(cfg));
+      for (var i in cfg) options[i] = cfg[i];
+      tasks = options.tasks;
+      if (typeof tasks == 'object' && Object.keys(tasks).length) {
+        this.tasks = tasks;
+        active = true;
+      }
+    } else {
+      this.logger.error("can't read config file: ", this.configFile);
+    }
   }
-  if (typeof callback == 'function') active = true;
 
   this.logger.info('self: ' + inspect(this) + '\n');
 
