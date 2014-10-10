@@ -1,0 +1,15 @@
+[Unit]
+Description=Hook Server for GitLab
+After=network.target
+
+[Service]
+User=wwwrun
+Group=www
+Type=simple
+StandardOutput=journal
+StandardError=journal
+Restart=always
+ExecStart=/usr/bin/node /usr/lib/node_modules/gitlabhook/gitlabhook-server.js
+
+[Install]
+WantedBy=multi-user.target

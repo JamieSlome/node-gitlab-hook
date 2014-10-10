@@ -20,7 +20,7 @@ var GitLabHook = function(options, callback) {
   options = options || {};
   this.configFile = options.configFile || 'gitlabhook.conf';
   this.configPathes = options.configPathes ||
-    ['/etc/gitlabhook', '/usr/local/etc/gitlabhook/', '.'];
+    ['/etc/gitlabhook/', '/usr/local/etc/gitlabhook/', '.'];
   this.port = options.port || 3420;
   this.host = options.host || '0.0.0.0';
   this.cmdshell = options.cmdshell || '/bin/sh';

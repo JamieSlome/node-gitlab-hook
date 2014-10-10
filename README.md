@@ -62,6 +62,15 @@ The place holders are:
 * `%t`: timestamp of the last commit
 * `%m`: message of the last commit
 
+The file `gitlabhook-server.js` shows an example GitLab Hook server listen at port 3420.
+
+## Installation hints for Linux
+
+The file `gitlabhook.service` is intended to use as a systemd sercvice. The `Makefile` helps to create an rpm archive for a systemd based OS. Call
+```
+make rpm
+```
+
 # License
 
 MIT

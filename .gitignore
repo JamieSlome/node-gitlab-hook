@@ -1,4 +1,9 @@
+.tgz
 node_modules/
 tmp/
-Makefile
+package/
+NOTIZEN
+Makefile.spec
+
+
 

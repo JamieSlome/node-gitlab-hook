@@ -15,11 +15,6 @@ var glh = {
   logger: logger
 };
 
-function myCallback(data) {
-  logger.info('*** "myCallback" gets data ***');
-  logger.info(util.inspect(data));
-}
-
 // With an optional callback function the "gitlabhook.conf" will be ignored.
 var server = require('gitlabhook')(glh);
 server.listen();
