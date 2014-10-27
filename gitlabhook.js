@@ -103,18 +103,25 @@ function executeShellCmds(self, address, data) {
   var a = data.repository.url.split(/[@:]/);
   var httpUrl = 'http://' + a[1] + ((a[3]) ? ':' + a[2] : '') +
     '/' + a[a.length-1];
-  var lastCommit = data.commits[data.commits.length-1];
-  var map = {
-    '%r': repo,
-    '%g': data.repository.url,
-    '%h': httpUrl,
-    '%u': data.user_name,
-    '%b': data.ref,
-    '%i': lastCommit.id,
-    '%t': lastCommit.timestamp,
-    '%m': lastCommit.message,
-    '%s': address
-  };
+  if(data.commits.length == 0)
+  {
+  	  var map = false;
+  }
+  else
+  {
+	  var lastCommit = data.commits[data.commits.length-1];
+	  var map = {
+	    '%r': repo,
+	    '%g': data.repository.url,
+	    '%h': httpUrl,
+	    '%u': data.user_name,
+	    '%b': data.ref,
+	    '%i': lastCommit.id,
+	    '%t': lastCommit.timestamp,
+	    '%m': lastCommit.message,
+	    '%s': address
+	  };
+  }
 
   function execute(path, idx) {
     if (idx == cmds.length) {
@@ -235,7 +242,10 @@ function getCmds(tasks, map, repo) {
   if (tasks.hasOwnProperty(repo)) x.push(tasks[repo]);
   for (var i=0; i<x.length; i++) {
     var cmdStr = (isArray(x[i])) ? x[i].join('\n') : x[i];
-    for (var j in map) cmdStr = cmdStr.replace(new RegExp(j, 'g'), map[j]);
+    if(map != false)
+    {
+	    for (var j in map) cmdStr = cmdStr.replace(new RegExp(j, 'g'), map[j]);
+    }
     ret.push(cmdStr + '\n');
   }
   return ret;
