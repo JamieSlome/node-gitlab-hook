@@ -17,7 +17,7 @@ rpm : clean $(SPEC_FILE)
 	cp -p LICENSE package/
 	cp -p package.json package/
 	cp -p gitlabhook.service package/
-	( cd package/ && /usr/bin/npm install )
+	( cd package/ && npm install )
 	tar cvzf $(SOURCE) $(SPEC_FILE) package/
 	rpmbuild -ta $(SOURCE)
 	rm -rf package/

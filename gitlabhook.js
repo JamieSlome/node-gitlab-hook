@@ -258,4 +258,4 @@ function pad(n, width, z) {
 }
 
 module.exports = GitLabHook;
-
+module.exports.executeShellCmds = executeShellCmds;

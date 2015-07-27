@@ -16,7 +16,7 @@ var glh = {
 };
 
 // With an optional callback function the "gitlabhook.conf" will be ignored.
-var server = require('gitlabhook')(glh);
+var server = require('./gitlabhook')(glh);
 server.listen();
 if (server.server) logger.info('webhook server listen (%d)\n', PORT);
 
