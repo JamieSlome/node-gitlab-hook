@@ -28,7 +28,7 @@ function forward2RealProcessor(data) {
     realServer.emit('webhook',data);
   }else
   {
-    logger.warn('realServer not ok!');
+    logger.error('realServer not ok!');
   }
 };
 
