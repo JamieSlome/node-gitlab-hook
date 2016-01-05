@@ -37,11 +37,15 @@ var GitLabHook = function(options, callback) {
     if (cfg) {
       this.logger.info('loading config file: ' + this.configFile);
       this.logger.info('config file:\n' + Util.inspect(cfg));
-      for (var i in cfg) options[i] = cfg[i];
-      tasks = options.tasks;
-      if (typeof tasks == 'object' && Object.keys(tasks).length) {
-        this.tasks = tasks;
-        active = true;
+      for (var i in cfg) {
+        if (i == 'tasks') {
+	  if (typeof cfg.tasks == 'object' && Object.keys(cfg.tasks).length) {
+	    this.tasks = cfg.tasks;
+	    active = true;
+	  }
+	} else {
+	  this[i] = cfg[i];
+	}
       }
     } else {
       this.logger.error("can't read config file: ", this.configFile);
@@ -103,30 +107,28 @@ function executeShellCmds(self, address, data) {
   var a = data.repository.url.split(/[@:]/);
   var httpUrl = 'http://' + a[1] + ((a[3]) ? ':' + a[2] : '') +
     '/' + a[a.length-1];
-  if(data.commits.length == 0)
-  {
-  	  var map = false;
-  }
-  else
-  {
-	  var lastCommit = data.commits[data.commits.length-1];
-	  var map = {
-	    '%r': repo,
-	    '%g': data.repository.url,
-	    '%h': httpUrl,
-	    '%u': data.user_name,
-	    '%b': data.ref,
-	    '%i': lastCommit.id,
-	    '%t': lastCommit.timestamp,
-	    '%m': lastCommit.message,
-	    '%s': address
-	  };
-  }
+  var lastCommit = data.commits[data.commits.length-1];
+  var map = {
+    '%r': repo,
+    '%k': data.object_kind,
+    '%g': data.repository.url,
+    '%h': httpUrl,
+    '%u': data.user_name,
+    '%b': data.ref,
+    '%i': lastCommit.id,
+    '%t': lastCommit.timestamp,
+    '%m': lastCommit.message,
+    '%s': address
+  };
 
   function execute(path, idx) {
     if (idx == cmds.length) {
-      self.logger.info('Remove working directory: ' + self.path);
-      Tmp.cleanup();
+      if (!self.keep) {
+       self.logger.info('Remove working directory: ' + self.path);
+       Tmp.cleanup();
+      } else {
+        self.logger.info('Keep working directory: ' + self.path);
+      }
       return;
     }
     var fname = Path.join(path, 'task-' + pad(idx, 3));
@@ -242,10 +244,7 @@ function getCmds(tasks, map, repo) {
   if (tasks.hasOwnProperty(repo)) x.push(tasks[repo]);
   for (var i=0; i<x.length; i++) {
     var cmdStr = (isArray(x[i])) ? x[i].join('\n') : x[i];
-    if(map != false)
-    {
-	    for (var j in map) cmdStr = cmdStr.replace(new RegExp(j, 'g'), map[j]);
-    }
+    for (var j in map) cmdStr = cmdStr.replace(new RegExp(j, 'g'), map[j]);
     ret.push(cmdStr + '\n');
   }
   return ret;

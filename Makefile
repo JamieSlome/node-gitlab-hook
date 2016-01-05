@@ -1,4 +1,4 @@
-# Rolf Niepraschk, 2014-10-10, Rolf.Niepraschk@gmx.de
+# Rolf Niepraschk, 2016-01-05, Rolf.Niepraschk@gmx.de
 
 MAIN = gitlabhook
 VERSION = $(shell awk -F '["]' '/version/ {print $$4}' package.json)
@@ -20,8 +20,10 @@ rpm : clean $(SPEC_FILE)
 	( cd package/ && /usr/bin/npm install )
 	tar cvzf $(SOURCE) $(SPEC_FILE) package/
 	rpmbuild -ta $(SOURCE)
-	rm -rf package/
+
+$(SPEC_FILE) :
+	$(MAKE) -f Makefile.spec
 
 clean :
-	rm -rf $(SOURCE) package/
+	rm -rf $(SOURCE) package/ $(SPEC_FILE)
 
