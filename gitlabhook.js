@@ -15,8 +15,15 @@ var Util = require('util');
 var inspect = Util.inspect;
 var isArray = Util.isArray;
 
-var GitLabHook = function(options, callback) {
-  if (!(this instanceof GitLabHook)) return new GitLabHook(options, callback);
+var GitLabHook = function(_options, _callback) {
+  if (!(this instanceof GitLabHook)) return new GitLabHook(_options, _callback);
+  var callback = null, options = null;
+  if (typeof _options === 'function') {
+    callback = _options;
+  } else {
+    callback = _callback;
+    options =  _options;
+  }
   options = options || {};
   this.configFile = options.configFile || 'gitlabhook.conf';
   this.configPathes = options.configPathes ||
@@ -114,9 +121,9 @@ function executeShellCmds(self, address, data) {
     '%h': httpUrl,
     '%u': data.user_name,
     '%b': data.ref,
-    '%i': lastCommit.id,
-    '%t': lastCommit.timestamp,
-    '%m': lastCommit.message,
+    '%i': lastCommit ? lastCommit.id : '',
+    '%t': lastCommit ? lastCommit.timestamp : '',
+    '%m': lastCommit ? lastCommit.message : '',
     '%s': address
   };
 
