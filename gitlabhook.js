@@ -38,14 +38,13 @@ var GitLabHook = function(options, callback) {
       this.logger.info('loading config file: ' + this.configFile);
       this.logger.info('config file:\n' + Util.inspect(cfg));
       for (var i in cfg) {
-        if (i == 'tasks') {
-	  if (typeof cfg.tasks == 'object' && Object.keys(cfg.tasks).length) {
-	    this.tasks = cfg.tasks;
-	    active = true;
-	  }
-	} else {
-	  this[i] = cfg[i];
-	}
+        if (i == 'tasks' && typeof cfg.tasks == 'object' &&
+            Object.keys(cfg.tasks).length) {
+          this.tasks = cfg.tasks;
+          active = true;
+        } else {
+          this[i] = cfg[i];
+        }
       }
     } else {
       this.logger.error("can't read config file: ", this.configFile);
