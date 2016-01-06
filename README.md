@@ -39,13 +39,17 @@ Example config file with task definitions:
     "myRepo": "/usr/local/bin/myDeploy %g",
          "*": ["echo 'GitLab Server %s'",
                "echo 'Repository: %r'",
+               "echo 'Event: %k'",
                "echo 'User: %u'",
                "echo 'Branch: %b'",
                "echo 'Git Url: %g'",
                "echo 'Last Commit: %i'",
                "echo '\tMessage: %m'",
                "echo '\tTime: %t'"]
-  }
+  },
+  "keep":false,
+  "logger": false,
+  "cmdshell":"/bin/bash"
 }
 ```
 The `*` matches any tasks.
@@ -54,6 +58,7 @@ The place holders are:
 
 * `%s`: GitLab server's IP address
 * `%r`: name of the repository (e.g. `myRepo`)
+* `%k`: kind of event (e.g. `tag_push`)
 * `%u`: owner of the repository (user name)
 * `%b`: branch reference (e.g. `refs/heads/master`)
 * `%g`: ssh-based cloning url on the GitLab server (e.g. `git@gitlab.host:rolf.niepraschk/myRepo.git`)
