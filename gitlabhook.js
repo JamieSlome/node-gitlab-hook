@@ -32,7 +32,7 @@ var GitLabHook = function(_options, _callback) {
   this.host = options.host || '0.0.0.0';
   this.cmdshell = options.cmdshell || '/bin/sh';
   this.keep = (typeof options.keep === 'undefined') ? false : options.keep;
-  this.logger = options.logger || { info: function(){}, error: function(){} };
+  this.logger = options.logger;
   this.callback = callback;
 
   var active = false, tasks;
@@ -57,6 +57,8 @@ var GitLabHook = function(_options, _callback) {
       this.logger.error("can't read config file: ", this.configFile);
     }
   }
+
+  this.logger = this.logger || { info: function(){}, error: function(){} };
 
   this.logger.info('self: ' + inspect(this) + '\n');
 
