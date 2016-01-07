@@ -14,7 +14,6 @@ PermissionsStartOnly=true
 # Remove PIDFile at Stop
 PIDFile=/var/run/gitlabhook/gitlabhookd.pid
 ExecStartPre=/usr/bin/mkdir -p /var/run/gitlabhook
-ExecStartPre=/usr/bin/chown wwwrun:www /var/run/gitlabhook
 ExecStartPost=/bin/sh -c '/usr/bin/echo $MAINPID > /var/run/gitlabhook/gitlabhookd.pid'
 ExecStart=/usr/bin/node /usr/lib/node_modules/gitlabhook/gitlabhook-server.js
 
