@@ -9,7 +9,7 @@ Type=simple
 StandardOutput=journal
 StandardError=journal
 Restart=always
-# Run ExecStartPre with root-permissions
+# Run ExecStartPre/ExecStartPost with root-permissions
 PermissionsStartOnly=true
 # Remove PIDFile at Stop
 PIDFile=/var/run/gitlabhook/gitlabhookd.pid

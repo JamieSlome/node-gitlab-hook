@@ -112,15 +112,12 @@ function reply(statusCode, res) {
 
 function executeShellCmds(self, address, data) {
   var repo = data.repository.name;
-  var a = data.repository.url.split(/[@:]/);
-  var httpUrl = 'http://' + a[1] + ((a[3]) ? ':' + a[2] : '') +
-    '/' + a[a.length-1];
-  var lastCommit = data.commits[data.commits.length-1];
+  var lastCommit = data.commits ? data.commits[data.commits.length-1] : null;
   var map = {
     '%r': repo,
     '%k': data.object_kind,
-    '%g': data.repository.url,
-    '%h': httpUrl,
+    '%g': data.repository ? data.repository.git_ssh_url : '',
+    '%h': data.repository ? data.repository.git_http_url : '',
     '%u': data.user_name,
     '%b': data.ref,
     '%i': lastCommit ? lastCommit.id : '',
