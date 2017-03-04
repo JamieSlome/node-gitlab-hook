@@ -34,6 +34,7 @@ var GitLabHook = function(_options, _callback) {
   this.keep = (typeof options.keep === 'undefined') ? false : options.keep;
   this.logger = options.logger;
   this.callback = callback;
+  this.token = (typeof options.token === 'undefined') ? false : options.token;
 
   var active = false, tasks;
 
@@ -241,6 +242,13 @@ function serverHandler(req, res) {
       return reply(405, res);
   }
 
+  // validate gitlab-token
+  if (self.token && req.headers['x-gitlab-token'] != self.token) {
+      self.logger.error(Util.format('got invalid token from %s, returning 405',
+        remoteAddress));
+      failed = true;
+      return reply(400, res);
+  }
 }
 
 function getCmds(tasks, map, repo) {
