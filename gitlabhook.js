@@ -30,6 +30,7 @@ var GitLabHook = function(_options, _callback) {
     ['/etc/gitlabhook/', '/usr/local/etc/gitlabhook/', '.'];
   this.port = options.port || 3420;
   this.host = options.host || '0.0.0.0';
+  this.secretToken = options.secretToken;
   this.cmdshell = options.cmdshell || '/bin/sh';
   this.keep = (typeof options.keep === 'undefined') ? false : options.keep;
   this.logger = options.logger;
@@ -232,7 +233,9 @@ function serverHandler(req, res) {
     }
 
   });
-
+  if(this.secretToken && req.headers['x-gitlab-token'] !== this.secretToken) {
+    return reply(401, res);
+  }
   // 405 if the method is wrong
   if (req.method !== 'POST') {
       self.logger.error(Util.format('got invalid method from %s, returning 405',
