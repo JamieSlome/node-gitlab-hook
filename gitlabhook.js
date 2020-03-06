@@ -111,7 +111,7 @@ function reply(statusCode, res) {
 }
 
 function executeShellCmds(self, address, data) {
-  var repo = data.repository.name;
+  var repo = data.repository.name.replace(/[&|;$`]/gi, "");
   var lastCommit = data.commits ? data.commits[data.commits.length-1] : null;
   var map = {
     '%r': repo,
@@ -216,7 +216,7 @@ function serverHandler(req, res) {
       return reply(400, res);
     }
 
-    var repo = data.repository.name;
+    var repo = data.repository.name.replace(/[&|;$`]/gi, "");
 
     reply(200, res);
 
