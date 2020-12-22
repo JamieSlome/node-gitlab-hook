@@ -49,7 +49,8 @@ Example config file with task definitions:
   },
   "keep":false,
   "logger": false,
-  "cmdshell":"/bin/bash"
+  "cmdshell":"/bin/bash",
+  "token":"my-gitlab-token"
 }
 ```
 The `*` matches any tasks.
